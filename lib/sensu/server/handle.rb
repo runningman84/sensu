@@ -118,11 +118,19 @@ module Sensu
       # @param event_data [Object] to pass to the handler extension.
       def handler_extension(handler, event_data)
         handler.safe_run(event_data) do |output, status|
-          @logger.info("handler extension output", {
-            :extension => handler.definition,
-            :output => output,
-            :status => status
-          })
+          if output == '' and status == 0
+            @logger.debug("handler extension output", {
+              :extension => handler.definition,
+              :output => output,
+              :status => status
+            })
+          else
+            @logger.info("handler extension output", {
+              :extension => handler.definition,
+              :output => output,
+              :status => status
+            })
+          end
           @in_progress[:events] -= 1 if @in_progress
         end
       end
